@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="style.css">
+        
+        <title>JS2</title>
+    </head>
+    <body>
+        
+        <canvas id="display" width="1200" height="600">
+            <p>Ваш браузер не поддерживает элемент canvas!</p>
+        </canvas>
+
+        <script>
+            var canvas = document.getElementById("display");
+            var ctx = canvas.getContext("2d");
+        </script>
+        <script src="logic.js"></script>
+    </body>
+</html>
