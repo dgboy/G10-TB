@@ -156,7 +156,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"NES - Battle City JPN - General Sprites.tsx"
+         "source":"tileset.tsx"
         }],
  "tilewidth":16,
  "type":"map",
