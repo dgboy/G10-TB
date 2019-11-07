@@ -1,3 +1,13 @@
+(function(name,data){
+ if(typeof onTileMapLoaded === 'undefined') {
+  if(typeof TileMaps === 'undefined') TileMaps = {};
+  TileMaps[name] = data;
+ } else {
+  onTileMapLoaded(name,data);
+ }
+ if(typeof module === 'object' && module && module.exports) {
+  module.exports = data;
+ }})("map",
 { "height":10,
  "infinite":false,
  "layers":[
@@ -15,131 +25,107 @@
         }, 
         {
          "draworder":"topdown",
-         "id":2,
+         "id":3,
          "name":"objects",
          "objects":[
                 {
                  "height":16,
-                 "id":17,
+                 "id":34,
                  "name":"wall",
                  "rotation":0,
                  "type":"collusion",
                  "visible":true,
                  "width":160,
-                 "x":0,
-                 "y":0
+                 "x":0.5,
+                 "y":0.5
                 }, 
                 {
                  "height":143,
-                 "id":18,
+                 "id":35,
                  "name":"wall",
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":15,
-                 "x":0.5,
+                 "x":1,
+                 "y":17
+                }, 
+                {
+                 "height":16,
+                 "id":36,
+                 "name":"wall",
+                 "rotation":0,
+                 "type":"collusion",
+                 "visible":true,
+                 "width":48,
+                 "x":16.5,
+                 "y":144.5
+                }, 
+                {
+                 "height":144,
+                 "id":37,
+                 "name":"wall",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":144.5,
                  "y":16.5
                 }, 
                 {
                  "height":16,
-                 "id":19,
+                 "id":38,
                  "name":"wall",
                  "rotation":0,
                  "type":"collusion",
                  "visible":true,
                  "width":48,
-                 "x":16,
-                 "y":144
-                }, 
-                {
-                 "height":144,
-                 "id":20,
-                 "name":"wall",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":144,
-                 "y":16
-                }, 
-                {
-                 "height":16,
-                 "id":21,
-                 "name":"wall",
-                 "rotation":0,
-                 "type":"collusion",
-                 "visible":true,
-                 "width":48,
-                 "x":96,
-                 "y":144
+                 "x":96.5,
+                 "y":144.5
                 }, 
                 {
                  "height":48,
-                 "id":22,
+                 "id":39,
                  "name":"wall",
                  "rotation":0,
                  "type":"collusion",
                  "visible":true,
                  "width":32,
-                 "x":96,
-                 "y":80
+                 "x":96.5,
+                 "y":80.5
                 }, 
                 {
                  "height":32,
-                 "id":23,
+                 "id":40,
                  "name":"wall",
                  "rotation":0,
                  "type":"collusion",
                  "visible":true,
                  "width":32,
-                 "x":96,
-                 "y":32
+                 "x":96.5,
+                 "y":32.5
                 }, 
                 {
                  "height":48,
-                 "id":24,
+                 "id":41,
                  "name":"wall",
                  "rotation":0,
                  "type":"collusion",
                  "visible":true,
                  "width":48,
-                 "x":32,
-                 "y":48
+                 "x":32.5,
+                 "y":48.5
                 }, 
                 {
                  "height":16,
-                 "id":25,
+                 "id":42,
                  "name":"wall",
                  "rotation":0,
                  "type":"collusion",
                  "visible":true,
                  "width":48,
-                 "x":32,
-                 "y":112
-                }, 
-                {
-                 "gid":1,
-                 "height":16,
-                 "id":27,
-                 "name":"player",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":16,
-                 "x":73,
-                 "y":159.333333333333
-                }, 
-                {
-                 "gid":206,
-                 "height":16,
-                 "id":28,
-                 "name":"simple",
-                 "rotation":0,
-                 "type":"enemy",
-                 "visible":true,
-                 "width":16,
-                 "x":80,
-                 "y":32
+                 "x":32.5,
+                 "y":112.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -147,8 +133,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":3,
- "nextobjectid":29,
+ "nextlayerid":4,
+ "nextobjectid":43,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tiledversion":"1.2.4",
@@ -162,4 +148,4 @@
  "type":"map",
  "version":1.2,
  "width":10
-}
+});

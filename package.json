@@ -1,0 +1,30 @@
+{
+  "name": "g10-tb",
+  "version": "0.1.0",
+  "description": "Game tentatively called 'Tank Battle'\"",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "heroku": "^7.31.0",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DioGuard/G10-TB.git"
+  },
+  "keywords": [
+    "game",
+    "tanks",
+    "arcade"
+  ],
+  "author": "D.G Studio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DioGuard/G10-TB/issues"
+  },
+  "homepage": "https://github.com/DioGuard/G10-TB#readme"
+}
