@@ -1,8 +1,6 @@
 var cvs = document.getElementById("display");
 var ctx = cvs.getContext("2d");
 
-let check = 0;
-
 const mapManager = {
     mapData: null,
     tLayer: null,
@@ -77,15 +75,12 @@ const mapManager = {
         ctx.clearRect(0, 0, cvs.width, cvs.height);
 
         if(!mapManager.imgLoaded || !mapManager.jsonLoaded) {
-            setTimeout(() => { 
-                mapManager.draw(); 
-            }, 100);
+            setTimeout(() => {
+                requestAnimationFrame(mapManager.draw);
+            }, 500);
         } else {
-            check++;
-            console.log(`A(${check}):` + this.tLayer);
-            
             if(!this.tLayer) {
-                console.log("In!");
+                console.log(this.mapData);
                 for(var id = 0; id < this.mapData.layers.length; i++) {
                     var layer = this.mapData.layers[id];
                     if(layer.type === "tilelayer") {
@@ -95,8 +90,6 @@ const mapManager = {
                     }
                 }
             }
-
-            console.log("B: " + this.tLayer);
 
             for(var i = 0; i < this.tLayer.data.length; i++) {
                 if(this.tLayer.data[i] !== 0) {
@@ -120,14 +113,13 @@ const mapManager = {
             }
         }
 
-        console.log("--- req ---");
-        requestAnimationFrame(mapManager.draw);
     },
 
     getTile: function (tileIndex) {
         var tile = {
             img: null, px: 0, py: 0
         }
+        console.log(tile);
         
         var tileset = this.getTileset(tileIndex);
         tile.img = tileset.image;
@@ -138,6 +130,7 @@ const mapManager = {
         tile.px = x * mapManager.tSize.x;
         tile.py = y * mapManager.tSize.y;
 
+        console.log(tile);
         return tile;
     },
 
@@ -178,8 +171,10 @@ spr.src = "images/tileset.png";
 
 function draw() {
     ctx.clearRect(0, 0, cvs.width, cvs.height);
-    ctx.drawImage(spr, 0, 0);
+    ctx.drawImage(spr, 0, 0, 16, 16, 10, 10, 8, 8);
+    ctx.drawImage(spr, 16, 16, 16, 16, 100, 100, 16, 16);
     requestAnimationFrame(draw);
 }
 
 draw();
+

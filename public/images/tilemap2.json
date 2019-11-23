@@ -5,7 +5,7 @@
          "data":[400, 400, 400, 1],
          "height":2,
          "id":1,
-         "name":"Tile Layer 1",
+         "name":"ground",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
