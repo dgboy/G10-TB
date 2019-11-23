@@ -1,15 +1,15 @@
 var cvs = document.getElementById("display");
 var ctx = cvs.getContext("2d");
 
-
+let check = 0;
 
 const mapManager = {
     mapData: null,
     tLayer: null,
     xCount: 0,
     yCount: 0,
-    tSize: {x: 64, y: 64},
-    mapSize: {x: 64, y: 64},
+    tSize: {x: 16, y: 16},
+    mapSize: {x: 16, y: 16},
     tilesets: new Array(),
 
     imgLoadCount: 0,
@@ -36,7 +36,6 @@ const mapManager = {
     },
 
     parseMap: function (tilesJSON) {
-        console.log(tilesJSON);
         this.mapData = JSON.parse(tilesJSON);
         console.log(this.mapData);
 
@@ -53,17 +52,12 @@ const mapManager = {
             img.onload = function () {
                 mapManager.imgLoadCount++;
     
-                if(
-                    mapManager.imgLoadCount === 
-                    mapManager.mapData.tilesets.length
-                ) {
-                    console.log(mapManager.mapData.tilesets.length);
+                if(mapManager.imgLoadCount === mapManager.mapData.tilesets.length) {
                     mapManager.imgLoaded = true;
                 }
             };
-    
-            console.log(this.mapDate.tilesets);
-            img.src = this.mapDate.tilesets[i].image;
+
+            img.src = this.mapData.tilesets[i].image;
             var t = this.mapData.tilesets[i];
             var ts = {
                 firstgid: t.firstgid,
@@ -72,26 +66,37 @@ const mapManager = {
                 xCount: Math.floor(t.imagewidth / mapManager.tSize.x),
                 yCount: Math.floor(t.imageheight / mapManager.tSize.y)
             }
+
             this.tilesets.push(ts);
         }
+        console.log(this);
         this.jsonLoaded = true;
     },
 
-    draw: function (ctx) {
+    draw: function () {
         ctx.clearRect(0, 0, cvs.width, cvs.height);
+
         if(!mapManager.imgLoaded || !mapManager.jsonLoaded) {
-            setTimeout(function () { mapManager.draw(ctx); }, 100);
+            setTimeout(() => { 
+                mapManager.draw(); 
+            }, 100);
         } else {
-            if(this.tLayer === null) {
+            check++;
+            console.log(`A(${check}):` + this.tLayer);
+            
+            if(!this.tLayer) {
+                console.log("In!");
                 for(var id = 0; id < this.mapData.layers.length; i++) {
                     var layer = this.mapData.layers[id];
-                    
                     if(layer.type === "tilelayer") {
+                        console.log(layer);
                         this.tLayer = layer;
                         break;
                     }
                 }
             }
+
+            console.log("B: " + this.tLayer);
 
             for(var i = 0; i < this.tLayer.data.length; i++) {
                 if(this.tLayer.data[i] !== 0) {
@@ -99,7 +104,7 @@ const mapManager = {
                     var pX = (i % this.xCount) * this.tSize.x;
                     var pY = Math.floor(i / this.yCount) * this.tSize.y;
                     
-                    if(!this.isVisible(pX, pY, this.tSize.x, this.tSize/y)) {
+                    if(!this.isVisible(pX, pY, this.tSize.x, this.tSize.y)) {
                         continue;
                     }
 
@@ -107,72 +112,69 @@ const mapManager = {
                     pY -= this.view.y;
 
                     ctx.drawImage(
-                        tile.img, tile.px. tile.py, 
+                        tile.img, tile.px, tile.py,
                         this.tSize.x, this.tSize.y,
                         pX, pY, this.tSize.x, this.tSize.y
                     );
                 }
             }
         }
-        requestAnimationFrame(draw);
+
+        console.log("--- req ---");
+        requestAnimationFrame(mapManager.draw);
+    },
+
+    getTile: function (tileIndex) {
+        var tile = {
+            img: null, px: 0, py: 0
+        }
+        
+        var tileset = this.getTileset(tileIndex);
+        tile.img = tileset.image;
+        var id = tileIndex - tileset.firstgid;
+        var x = id % tileset.xCount;
+        var y = Math.floor(id / tileset.xCount);
+
+        tile.px = x * mapManager.tSize.x;
+        tile.py = y * mapManager.tSize.y;
+
+        return tile;
+    },
+
+    getTileset: function (tileIndex) {
+        for(var i = mapManager.tilesets.length - 1; i >= 0; i--) {
+            if(mapManager.tilesets[i].firstgid <= tileIndex) {
+                return mapManager.tilesets[i];
+            }
+        }
+
+        return null;
+    },
+
+    isVisible: function (x, y, width, height) {
+        if(
+            x + width < this.view.x || 
+            y + height < this.view.y || 
+            x < this.view.x + this.view.w || 
+            y < this.view.y + this.view.h
+        ) {
+            return false;
+        }
+        return true;
     }
 };
 
 
-
-mapManager.loadMap("http://dg:3000/images/map.json");
-mapManager.draw(ctx);
-
-
-
-function getTile(tileIndex) {
-    var tile = {
-        img: null,
-        px: 0,
-        py: 0
-    }
-    
-    var tileset = this.getTileset(tileIndex);
-    tile.img = tileset.image;
-    var id = tileIndex - tileset.firstgid;
-    var x = id % tileset.xCount;
-    var y = Math.floor(id / tileset.xCount);
-
-    tile.px = x * mapManager.tSize.x;
-    tile.py = y * mapManager.tSize.y;
-
-    return tile;
-}
-
-function getTileset(tileIndex) {
-    for(var i = mapManager.tilesets.length - 1; i >= 0; i--) {
-        if(mapManager.tilesets[i].firstgid <= tileIndex) {
-            return mapManager.tilesets[i];
-        }
-    }
-
-    return null;
-}
-
-function isVisible(x, y, width, height) {
-    if(
-        x + width < this.view.x || 
-        y + height < this.view.y ||
-        x < this.view.x + this.view.w || 
-        y < this.view.y + this.view.h
-    ) {
-        return false;
-    }
-
-    return true;
-}
-
-
 /*
-let spr = new Image();
-spr.src = "images/pic_greenhead.png";
+mapManager.loadMap("http://dg:3000/images/tilemap2.json");
+mapManager.draw();
+*/
 
-console.log(ctx);
+
+
+
+let spr = new Image();
+spr.src = "images/tileset.png";
 
 function draw() {
     ctx.clearRect(0, 0, cvs.width, cvs.height);
@@ -181,4 +183,3 @@ function draw() {
 }
 
 draw();
-*/

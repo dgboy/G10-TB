@@ -1,0 +1,37 @@
+{ "height":2,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[400, 400, 400, 1],
+         "height":2,
+         "id":1,
+         "name":"Tile Layer 1",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":2,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":2,
+ "nextobjectid":1,
+ "orientation":"orthogonal",
+ "renderorder":"left-down",
+ "tiledversion":"1.2.4",
+ "tileheight":16,
+ "tilesets":[
+        {
+              "firstgid":1,
+              "imagewidth": 400,
+              "imageheight": 256,
+              "name": "tileset",
+              "source":"tileset.json",
+              "image":"http://dg:3000/images/tileset.png",
+              "tileheight": 16,
+              "tilewidth": 16
+        }],
+ "tilewidth":16,
+ "type":"map",
+ "version":1.2,
+ "width":2
+}
