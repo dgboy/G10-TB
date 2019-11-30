@@ -1,166 +1,171 @@
 var cvs = document.getElementById("display");
 var ctx = cvs.getContext("2d");
 
+ctx.mozImageSmoothingEnabled = false;
+ctx.webkitImageSmoothingEnabled = false;
+ctx.msImageSmoothingEnabled = false;
+ctx.imageSmoothingEnabled = false;
+
 const mapManager = {
-    mapData: null,
-    tLayer: null,
-    xCount: 0,
-    yCount: 0,
-    tSize: {x: 16, y: 16},
-    mapSize: {x: 16, y: 16},
-    tilesets: new Array(),
+	mapData: null,
+	tLayer: null,
+	xCount: 0,
+	yCount: 0,
+	tSize: {x: 16, y: 16},
+	mapSize: {x: 16, y: 16},
+	tilesets: new Array(),
 
-    imgLoadCount: 0,
-    imgLoaded: false,
-    jsonLoaded: false,
+	imgLoadCount: 0,
+	imgLoaded: false,
+	jsonLoaded: false,
 
-    view: {
-        x: 0,
-        y: 0,
-        w: 1200,
-        h: 600
-    },
+	view: {
+		x: 0,
+		y: 0,
+		w: 1200,
+		h: 600
+	},
 
-    loadMap: function(path) {
-        var req = new XMLHttpRequest();
-        req.onreadystatechange = function() {
-            if(req.readyState === 4 && req.status === 200) {
-                mapManager.parseMap(req.responseText);
-            }
-        };
-        
-        req.open("GET", path, true);
-        req.send();
-    },
+	loadMap: async function(path) {
+		const res = await fetch(path);
 
-    parseMap: function (tilesJSON) {
-        this.mapData = JSON.parse(tilesJSON);
-        console.log(this.mapData);
+		if (res.ok) {
+			mapManager.parseMap(await res.json());
+		} else {
+			console.log("HTTP Error: " + res.status);
+		}
+	},
 
-        this.xCount = this.mapData.width;
-        this.yCount = this.mapData.height;
-        this.tSize.x = this.mapData.tilewidth;
-        this.tSize.y = this.mapData.tileheight;
-        this.mapSize.x = this.xCount * this.tSize.x;
-        this.mapSize.y = this.yCount * this.tSize.y;
-    
-        for(var i = 0; i < this.mapData.tilesets.length; i++) {
-            var img = new Image();
-    
-            img.onload = function () {
-                mapManager.imgLoadCount++;
-    
-                if(mapManager.imgLoadCount === mapManager.mapData.tilesets.length) {
-                    mapManager.imgLoaded = true;
-                }
-            };
+	parseMap: function (json) {
+		this.mapData = json;
+		console.log(json);
 
-            img.src = this.mapData.tilesets[i].image;
-            var t = this.mapData.tilesets[i];
-            var ts = {
-                firstgid: t.firstgid,
-                image: img,
-                name: t.name,
-                xCount: Math.floor(t.imagewidth / mapManager.tSize.x),
-                yCount: Math.floor(t.imageheight / mapManager.tSize.y)
-            }
+		this.xCount = this.mapData.width;
+		this.yCount = this.mapData.height;
+		this.tSize.x = this.mapData.tilewidth;
+		this.tSize.y = this.mapData.tileheight;
+		this.mapSize.x = this.xCount * this.tSize.x;
+		this.mapSize.y = this.yCount * this.tSize.y;
+	
+		for(var i = 0; i < this.mapData.tilesets.length; i++) {
+			var img = new Image();
+	
+			img.onload = function () {
+				mapManager.imgLoadCount++;
+	
+				if(mapManager.imgLoadCount === mapManager.mapData.tilesets.length) {
+					mapManager.imgLoaded = true;
+				}
+			};
 
-            this.tilesets.push(ts);
-        }
-        console.log(this);
-        this.jsonLoaded = true;
-    },
+			img.src = this.mapData.tilesets[i].image;
+			var t = this.mapData.tilesets[i];
+			var ts = {
+				firstgid: t.firstgid,
+				image: img,
+				name: t.name,
+				xCount: Math.floor(t.imagewidth / mapManager.tSize.x),
+				yCount: Math.floor(t.imageheight / mapManager.tSize.y)
+			}
 
-    draw: function () {
-        ctx.clearRect(0, 0, cvs.width, cvs.height);
+			this.tilesets.push(ts);
+		}
+		console.log(this);
+		this.jsonLoaded = true;
+		mapManager.draw();
+	},
 
-        if(!mapManager.imgLoaded || !mapManager.jsonLoaded) {
-            setTimeout(() => {
-                requestAnimationFrame(mapManager.draw);
-            }, 500);
-        } else {
-            if(!this.tLayer) {
-                console.log(this.mapData);
-                for(var id = 0; id < this.mapData.layers.length; i++) {
-                    var layer = this.mapData.layers[id];
-                    if(layer.type === "tilelayer") {
-                        console.log(layer);
-                        this.tLayer = layer;
-                        break;
-                    }
-                }
-            }
+	draw: function () {
+		ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-            for(var i = 0; i < this.tLayer.data.length; i++) {
-                if(this.tLayer.data[i] !== 0) {
-                    var tile = this.getTile(this.tLayer.data[i]);
-                    var pX = (i % this.xCount) * this.tSize.x;
-                    var pY = Math.floor(i / this.yCount) * this.tSize.y;
-                    
-                    if(!this.isVisible(pX, pY, this.tSize.x, this.tSize.y)) {
-                        continue;
-                    }
+		if(!mapManager.imgLoaded || !mapManager.jsonLoaded) {
+			setTimeout(() => {
+				mapManager.draw(ctx);
+			}, 500);
+		} else {
+			if(!this.tLayer) {
+				console.log(this.mapData);
+				for(var id = 0; id < this.mapData.layers.length; id++) {
+					var layer = this.mapData.layers[id];
+					if(layer.type === "tilelayer") {
+						console.log(layer);
+						this.tLayer = layer;
+						break;
+					}
+				}
+			}
 
-                    pX -= this.view.x;
-                    pY -= this.view.y;
+			for(var i = 0; i < this.tLayer.data.length; i++) {
+				if(this.tLayer.data[i] !== 0) {
+					var tile = this.getTile(this.tLayer.data[i]);
+					var pX = (i % this.xCount) * this.tSize.x;
+					var pY = Math.floor(i / this.yCount) * this.tSize.y;
+					
+					/*
+					if(!this.isVisible(pX, pY, this.tSize.x, this.tSize.y)) {
+						continue;
+					}*/
 
-                    ctx.drawImage(
-                        tile.img, tile.px, tile.py,
-                        this.tSize.x, this.tSize.y,
-                        pX, pY, this.tSize.x, this.tSize.y
-                    );
-                }
-            }
-        }
+					pX -= this.view.x;
+					pY -= this.view.y;
 
-    },
+					ctx.drawImage(
+						tile.img, tile.px, tile.py,
+						this.tSize.x, this.tSize.y,
+						pX, pY, this.tSize.x, this.tSize.y
+					);
+				}
+			}
+		}
 
-    getTile: function (tileIndex) {
-        var tile = {
-            img: null, px: 0, py: 0
-        }
-        console.log(tile);
-        
-        var tileset = this.getTileset(tileIndex);
-        tile.img = tileset.image;
-        var id = tileIndex - tileset.firstgid;
-        var x = id % tileset.xCount;
-        var y = Math.floor(id / tileset.xCount);
+	},
 
-        tile.px = x * mapManager.tSize.x;
-        tile.py = y * mapManager.tSize.y;
+	getTile: function (tileIndex) {
+		var tile = {
+			img: null, px: 0, py: 0
+		}
+		console.log(tile);
+		
+		var tileset = this.getTileset(tileIndex);
+		tile.img = tileset.image;
+		var id = tileIndex - tileset.firstgid;
+		var x = id % tileset.xCount;
+		var y = Math.floor(id / tileset.xCount);
 
-        console.log(tile);
-        return tile;
-    },
+		tile.px = x * mapManager.tSize.x;
+		tile.py = y * mapManager.tSize.y;
 
-    getTileset: function (tileIndex) {
-        for(var i = mapManager.tilesets.length - 1; i >= 0; i--) {
-            if(mapManager.tilesets[i].firstgid <= tileIndex) {
-                return mapManager.tilesets[i];
-            }
-        }
+		console.log(tile);
+		return tile;
+	},
 
-        return null;
-    },
+	getTileset: function (tileIndex) {
+		for(var i = mapManager.tilesets.length - 1; i >= 0; i--) {
+			if(mapManager.tilesets[i].firstgid <= tileIndex) {
+				return mapManager.tilesets[i];
+			}
+		}
 
-    isVisible: function (x, y, width, height) {
-        if(
-            x + width < this.view.x || 
-            y + height < this.view.y || 
-            x < this.view.x + this.view.w || 
-            y < this.view.y + this.view.h
-        ) {
-            return false;
-        }
-        return true;
-    }
+		return null;
+	},
+
+	isVisible: function (x, y, width, height) {
+		if(
+			x + width < this.view.x || 
+			y + height < this.view.y || 
+			x < this.view.x + this.view.w || 
+			y < this.view.y + this.view.h
+		) {
+			return false;
+		}
+		return true;
+	}
 };
 
 
 
-mapManager.loadMap("http://dg:3000/images/tilemap2.json");
-mapManager.draw();
+mapManager.loadMap("http://dg:3000/images/tilemap.json");
+//mapManager.draw();
 
 
 
@@ -170,10 +175,10 @@ let spr = new Image();
 spr.src = "images/tileset.png";
 
 function draw() {
-    ctx.clearRect(0, 0, cvs.width, cvs.height);
-    ctx.drawImage(spr, 0, 0, 16, 16, 10, 10, 8, 8);
-    ctx.drawImage(spr, 16, 16, 16, 16, 100, 100, 16, 16);
-    requestAnimationFrame(draw);
+	ctx.clearRect(0, 0, cvs.width, cvs.height);
+	ctx.drawImage(spr, 0, 0, 16, 16, 10, 10, 8, 8);
+	ctx.drawImage(spr, 16, 16, 16, 16, 100, 100, 16, 16);
+	requestAnimationFrame(draw);
 }
 
 draw();
