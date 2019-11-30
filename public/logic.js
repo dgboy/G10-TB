@@ -158,14 +158,14 @@ const mapManager = {
 };
 
 
-/*
+
 mapManager.loadMap("http://dg:3000/images/tilemap2.json");
 mapManager.draw();
-*/
 
 
 
 
+/*
 let spr = new Image();
 spr.src = "images/tileset.png";
 
@@ -177,4 +177,4 @@ function draw() {
 }
 
 draw();
-
+*/
