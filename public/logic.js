@@ -1,10 +1,7 @@
-var cvs = document.getElementById("display");
-var ctx = cvs.getContext("2d");
+const cvs = document.getElementById("display");
+const ctx = cvs.getContext("2d");
 
-ctx.mozImageSmoothingEnabled = false;
-ctx.webkitImageSmoothingEnabled = false;
-ctx.msImageSmoothingEnabled = false;
-ctx.imageSmoothingEnabled = false;
+const path = "http://dg:3000/images/";
 
 const mapManager = {
 	mapData: null,
@@ -36,9 +33,13 @@ const mapManager = {
 		}
 	},
 
-	parseMap: function (json) {
+	loadTileset: async function(path) {
+		const res = await fetch(path);
+		return (res.ok) ? await res.json() : res.status;
+	},
+
+	parseMap: async function (json) {
 		this.mapData = json;
-		console.log(json);
 
 		this.xCount = this.mapData.width;
 		this.yCount = this.mapData.height;
@@ -58,10 +59,11 @@ const mapManager = {
 				}
 			};
 
-			img.src = this.mapData.tilesets[i].image;
-			var t = this.mapData.tilesets[i];
+			const t = await this.loadTileset(path + this.mapData.tilesets[i].source);
+			img.src = path + t.image;
+
 			var ts = {
-				firstgid: t.firstgid,
+				firstgid: this.mapData.tilesets[i].firstgid,
 				image: img,
 				name: t.name,
 				xCount: Math.floor(t.imagewidth / mapManager.tSize.x),
@@ -70,8 +72,8 @@ const mapManager = {
 
 			this.tilesets.push(ts);
 		}
-		console.log(this);
 		this.jsonLoaded = true;
+
 		mapManager.draw();
 	},
 
@@ -84,11 +86,9 @@ const mapManager = {
 			}, 500);
 		} else {
 			if(!this.tLayer) {
-				console.log(this.mapData);
 				for(var id = 0; id < this.mapData.layers.length; id++) {
 					var layer = this.mapData.layers[id];
 					if(layer.type === "tilelayer") {
-						console.log(layer);
 						this.tLayer = layer;
 						break;
 					}
@@ -164,7 +164,7 @@ const mapManager = {
 
 
 
-mapManager.loadMap("http://dg:3000/images/tilemap.json");
+mapManager.loadMap(path + "tilemap.json");
 //mapManager.draw();
 
 

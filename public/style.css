@@ -1,16 +1,7 @@
 body {
-    display: grid;
-    position: absolute;
-    
-    background: black;
-    left: 50%;
+    background: gray;
 }
 
 #display {
-    width: 1200px;
-    height: 600px;
-    
-    margin-left: -600px;
-    border: 5px solid darkred;
-    background: lightgray;
+    margin-left: 600px;
 }
