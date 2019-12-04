@@ -1,6 +1,8 @@
 const cvs = document.getElementById("display");
 const ctx = cvs.getContext("2d");
 
+ctx.imageSmoothingEnabled = false;
+
 const path = "http://dg:3000/images/";
 
 const mapManager = {
@@ -108,11 +110,11 @@ const mapManager = {
 
 					pX -= this.view.x;
 					pY -= this.view.y;
-
+					
 					ctx.drawImage(
 						tile.img, tile.px, tile.py,
 						this.tSize.x, this.tSize.y,
-						pX, pY, this.tSize.x, this.tSize.y
+						pX, pY, this.tSize.x, this.tSize.y					
 					);
 				}
 			}
@@ -165,21 +167,3 @@ const mapManager = {
 
 
 mapManager.loadMap(path + "tilemap.json");
-//mapManager.draw();
-
-
-
-
-/*
-let spr = new Image();
-spr.src = "images/tileset.png";
-
-function draw() {
-	ctx.clearRect(0, 0, cvs.width, cvs.height);
-	ctx.drawImage(spr, 0, 0, 16, 16, 10, 10, 8, 8);
-	ctx.drawImage(spr, 16, 16, 16, 16, 100, 100, 16, 16);
-	requestAnimationFrame(draw);
-}
-
-draw();
-*/
