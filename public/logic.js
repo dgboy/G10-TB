@@ -35,7 +35,7 @@ const mapManager = {
 		}
 	},
 
-	loadTileset: async function(path) {
+	fetchJson: async function(path) {
 		const res = await fetch(path);
 		return (res.ok) ? await res.json() : res.status;
 	},
@@ -61,7 +61,7 @@ const mapManager = {
 				}
 			};
 
-			const t = await this.loadTileset(path + this.mapData.tilesets[i].source);
+			const t = await this.fetchJson(path + this.mapData.tilesets[i].source);
 			img.src = path + t.image;
 
 			var ts = {
@@ -114,7 +114,7 @@ const mapManager = {
 					ctx.drawImage(
 						tile.img, tile.px, tile.py,
 						this.tSize.x, this.tSize.y,
-						pX, pY, this.tSize.x, this.tSize.y					
+						pX, pY, this.tSize.x * 2, this.tSize.y * 2
 					);
 				}
 			}
